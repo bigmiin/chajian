@@ -2,11 +2,11 @@
 // @name         喵苏鲁规则
 // @author       西瓜咕噜2068281904
 // @version      1.0.1
-// @description  如题，对应喵苏鲁七版规则，同文件夹内还有规则书和角色卡，都给我去玩！！！7.21留：翻译群内有最新版角色卡，更加契合七版规则，找不到群也可以来找我要（？7.26留：加了个六版制卡7.27留：加了能抽取恐惧的指令，请使用.喵查看
+// @description  如题，对应喵苏鲁七版规则，同文件夹内还有规则书和角色卡，都给我去玩！！！7.21留：翻译群内有最新版角色卡，更加契合七版规则，找不到群也可以来找我要（？7.26留：加了个六版制卡7.27留：加了能抽取恐惧的指令，请使用.喵查看 7.30留：新增一个房规（1-5,96-100)的检定指令
 // @license      MIT
-// @timestamp    2024-7-27
+// @timestamp    2024-7-30
 // @homepageURL  https://github.com/bigmiin/bird.git
-// @updateUrl
+// @updateUrl    https://raw.githubusercontent.com/bigmiin/chajian/main/%E5%96%B5%E8%8B%8F%E9%B2%81%E6%A8%A1%E7%89%88%E8%A7%92%E8%89%B2%E5%8D%A1
 // ==/UserScript==
 
 //模版卡喵
@@ -14,8 +14,8 @@ const miao={
     "name":"喵苏鲁",
     "fullname":"喵苏鲁角色卡制作",
     "authors":["西瓜咕噜"],
-    "version":"1.0.2",
-    "updatedTime":"20240727",
+    "version":"1.2.0",
+    "updatedTime":"20240730",
     "templateVer":"1.0",
     //名片
     "nameTemplate":{
@@ -24,6 +24,14 @@ const miao={
             "helpText": "自动设置喵苏鲁名片"
         }
     },
+
+    "setConfig":{
+        "diceSides": 100,
+        "enableTip": "已切换至100面骰，开启喵苏鲁规则扩展",
+        "keys": ["miao"],
+        "relatedExt": ["喵苏鲁","coc7"],
+    },
+
     "attrConfig":{
         //stshow置顶内容
         "top":['力量','体质','体型','智力','敏捷','教育','外貌','意志','幸运','HP','感知','MP','知识','移动力'],
@@ -33,13 +41,6 @@ const miao={
         "showAs":{
         },
         "setter":null,
-    },
-
-    "setConfig":{
-        "diceSides": 100,
-        "enableTip": "已切换至100面骰，开启喵苏鲁规则扩展",
-        "keys": ["miao"],
-        "relatedExt": ["喵苏鲁","coc7"],
     },
 //这里是规则书上给的技能，写到这，才发现，非默认技能就与人类相同哈哈……好尴尬
     "defaults":{
@@ -97,9 +98,111 @@ try {
     console.log(e)
 }
 
+//事已至此，先写新指令吧
+function makecheck(ctx,value,dic) {
+    let check=value;
+    //checkit
+    let dice=dic;
+    let text0=`${dice}/${seal.format(ctx,`${value}`)}`;
+    let text='';
+    if (check<=95){
+    if (dice<=5){
+        text=seal.formatTmpl(ctx,'COC:判定_大成功');
+    }
+    else if (dice<=(check/5)){
+        text=seal.formatTmpl(ctx,'COC:判定_成功_极难');
+    }
+    else if (dice<=(check/2)){
+        text=seal.formatTmpl(ctx,'COC:判定_成功_困难');
+    }
+    else if (dice<=check){
+        text=seal.formatTmpl(ctx,'COC:判定_成功_普通');
+    }
+    else if (dice>=96){
+        text=seal.formatTmpl(ctx,'COC:判定_大失败');
+    }
+    else{
+        text=seal.formatTmpl(ctx,'COC:判定_失败');
+    }
+    }
+    else if (check<=100){
+        if (dice<=5){
+            text=seal.formatTmpl(ctx,'COC:判定_大成功');
+        }
+        else if (dice<=(check/5)){
+            text=seal.formatTmpl(ctx,'COC:判定_成功_极难');
+        }
+        else if (dice<=(check/2)){
+            text=seal.formatTmpl(ctx,'COC:判定_成功_困难');
+        }
+        else if (dice<=check){
+            text=seal.formatTmpl(ctx,'COC:判定_成功_普通');
+        }
+        else{
+            text=seal.formatTmpl(ctx,'COC:判定_大失败');
+        }
+    }
+    else if (check>=101){
+        if (dice<=5){
+            text=seal.formatTmpl(ctx,'COC:判定_大成功');
+        }
+        else if (dice<=(check/5)){
+            text=seal.formatTmpl(ctx,'COC:判定_成功_极难');
+        }
+        else if (dice<=(check/2)){
+            text=seal.formatTmpl(ctx,'COC:判定_成功_困难');
+        }
+        else{
+            text=seal.formatTmpl(ctx,'COC:判定_成功_普通');
+        }
+    }
+
+    
+    text0+=' '+text;
+    return text0;  
+}
+
+
+const cmdsansan = seal.ext.newCmdItemInfo();
+cmdsansan.name = 'rma';
+cmdsansan.allowDelegate = true;
+cmdsansan.solve=(ctx,msg,cmdArgs)=>{
+    //获取代骰数据
+    let mctx=seal.getCtxProxyFirst(ctx,cmdArgs);
+    let val = cmdArgs.getArgN(1);
+    switch (val) {
+        case '':
+        case 'help': {
+            const ret = seal.ext.newCmdExecuteResult(true);
+            ret.showHelp = true;
+            return ret;
+        }
+        default: {
+            //计算判定用的值
+            let check=0;
+            if (!parseInt(val)){
+                if (parseInt(cmdArgs.getArgN(2))){
+                    check=parseInt(cmdArgs.getArgN(2))
+                }
+                else{check=seal.format(mctx,`{${val}}`)}
+            }
+            else{
+                check=parseInt(val);
+            };
+            //用函数进行判定
+            let print=makecheck(mctx,check,seal.format(ctx,`{1d100}`));
+            seal.replyToSender(mctx, msg, `${seal.format(mctx,'{$t玩家}')}：${print}`);
+            return seal.ext.newCmdExecuteResult(true);
+            
+        }
+    }
+};
+
+
 if (!seal.ext.find('喵苏鲁模版卡')) {
     // 创建一个插件
     const ext = seal.ext.new('喵苏鲁模版卡', '西瓜咕噜', '1.0.0');
+    seal.ext.register(ext);
 
     const cmdmiao = seal.ext.newCmdItemInfo();
     cmdmiao.name = '喵';
@@ -107,7 +210,7 @@ if (!seal.ext.find('喵苏鲁模版卡')) {
     let val = cmdArgs.getArgN(1)
         switch (val) {
             default: {
-                help = '喵苏鲁TRPG相应指令\n使用.set miao切换角色卡模版\n使用.sn miao做成喵苏鲁名片\n使用.coc6喵<数量>作成喵苏鲁六版规则角色\n使用.coc喵<数量>作成喵苏鲁七版规则角色\n使用.fs抽取一次性损失了超过5点的SEN时的野性行为\n使用.fl抽取短时间内损失了超过SEN值总额20%的SEN值时的野性行为'
+                help = '喵苏鲁TRPG相应指令\n使用.set miao切换角色卡模版\n使用.sn miao做成喵苏鲁名片\n使用.coc6喵<数量>作成喵苏鲁六版规则角色\n使用.coc喵<数量>作成喵苏鲁七版规则角色\n使用.fs 抽取一次性损失了超过5点的SEN时的野性行为\n使用.fl 抽取短时间内损失了超过SEN值总额20%的SEN值时的野性行为\n.rma <属性> (数值) //房规1-5,96-100为大失败的检定指令\n.rma <属性> (数值) @//进行代骰鉴定'
                 seal.replyToSender(ctx, msg, help) 
             }
         }
@@ -279,14 +382,11 @@ if (!seal.ext.find('喵苏鲁模版卡')) {
             }
         };
 
-
-
-
-    ext.cmdMap['coc喵'] = cmdcat;
-    ext.cmdMap['coc6喵'] = cmdliu;
-    ext.cmdMap['喵'] = cmdmiao;
-    ext.cmdMap['miao'] = cmdmiao;
-    ext.cmdMap['fs'] = cmdduan;
-    ext.cmdMap['fl'] = cmdchang;
-    seal.ext.register(ext);
-}
+        ext.cmdMap['coc喵'] = cmdcat;
+        ext.cmdMap['coc6喵'] = cmdliu;
+        ext.cmdMap['喵'] = cmdmiao;
+        ext.cmdMap['miao'] = cmdmiao;
+        ext.cmdMap['fs'] = cmdduan;
+        ext.cmdMap['fl'] = cmdchang;
+        ext.cmdMap['rma'] = cmdsansan
+    }
