@@ -1,0 +1,107 @@
+// ==UserScript==
+// @name         jojoTRPG
+// @author       西瓜咕噜
+// @version      1.0.0
+// @description  测试
+// @license      CC-BY-NC-ND 4.0
+// @timestamp    2024-7-28
+// @homepageURL  https://github.com/bigmiin/-.git
+// @updateUrl    https://raw.githubusercontent.com/bigmiin/-/main/jojo
+// ==/UserScript==
+
+//写模版
+const jojo ={
+    "name":"JOJO",
+    "fullname":"JOJO角色卡制作",
+    "authors":["西瓜咕噜"],
+    "version":"1.0.0",
+    "updatedTime":"20240730",
+    "templateVer":"1.0",
+    //名片
+    "nameTemplate":{
+        "miao":{
+            "template":"{$t玩家_RAW} HP{HP} DEX{敏捷}",
+            "helpText": "自动设置JOJO名片"
+        }
+    },
+
+    "setConfig":{
+        "diceSides": 100,
+        "enableTip": "已切换至100面骰，开启JOJO扩展",
+        "keys": ["jojo","JOJO"],
+        "relatedExt": ["jojo","coc7"],
+    },
+    "textMap": {
+        "trpg-test": {
+            "设置测试_成功": [
+                ["设置完成", 1]
+            ]
+        }
+    },
+    "attrConfig":{
+        //stshow置顶内容
+        "top":['力量','体质','体型','敏捷','外貌','意志','教育','智力','幸运','HP','行动点','MP','知识','移动力'],
+        "sortBy":"name",
+        "ignores":["力气","耐力","灵巧","魅力"],
+        //上面这行没什么用但没影响别管了
+        "showAs":{
+        },
+        "setter":null,
+    },
+    "textMapHelpInfo": null
+}
+
+try {
+    seal.gameSystem.newTemplate(JSON.stringify(jojo))
+} catch (e) {
+    // 如果扩展已存在，或加载失败，那么会走到这里
+    console.log(e)
+}
+
+
+if (!seal.ext.find('jojoTRPG')) {
+    // 创建一个插件
+    const ext = seal.ext.new('jojoTRPG', '西瓜咕噜', '1.0.0');
+    seal.ext.register(ext);
+
+    const cmdzhika = seal.ext.newCmdItemInfo();
+    cmdzhika.name = 'jo';
+    cmdzhika.solve = (ctx, msg, cmdArgs) => {
+        let val = cmdArgs.getArgN(1)||1
+        switch (val) {
+            default: {
+                let times = parseInt(val)
+                let result = seal.format(ctx,"{$t玩家_RAW}的jojo制卡作成:\n")
+                let split = seal.formatTmpl(ctx, "COC:制卡_分隔符")
+                if (!parseInt(val) || parseInt(val) == 0) {
+                    const ret = seal.ext.newCmdExecuteResult(true);
+                    ret.showHelp = true;
+                    return ret;
+                }
+                if (times >= 10) {
+                    result += "制卡次数过多，请输入不大于10的数字"
+                    seal.replyToSender(ctx, msg, result)
+                    return seal.ext.newCmdExecuteResult(true);
+                }
+                for (let i = 0; i < times; i++) {
+                    let ret = seal.format(ctx,
+                        "力量:{$t力量=3d6*5+5} 体质:{$t体质=3d6*5+5} 体型:{$t体型=(2d6+6)*5+5}\n" +
+                        "敏捷:{$t敏捷=3d6*5} 外貌:{$t外貌=3d6*5} 意志:{$t意志=3d6*5+5}\n" +
+                        "教育:{$t教育=(2d6+6)*5+5} 智力:{$t智力=(2d6+6)*5} 总和:{$t总和=$t力量+$t体质+$t体型+$t敏捷+$t外貌+$t意志+$t教育+$t智力}\n"+
+                        "幸运:{d100} {d100} {d100} 成长性:{d25}\n"+
+                        "替身前hp:{$thp=($t体质 + $t体型)/10} 替身后hp:{$thpp=($t体质 + $t体型 + $t意志)/10}\n"
+                        )
+                    result = result + ret + split
+                    another = ""
+                }
+
+                seal.vars.strSet(ctx, "$t制卡结果文本", result)
+                seal.replyToSender(ctx, msg, result+another)
+            }
+        }
+        return seal.ext.newCmdExecuteResult(true);
+    }
+
+    //注册命令
+    ext.cmdMap['jo'] = cmdzhika;
+}
