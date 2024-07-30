@@ -1,0 +1,292 @@
+// ==UserScript==
+// @name         喵苏鲁规则
+// @author       西瓜咕噜2068281904
+// @version      1.0.1
+// @description  如题，对应喵苏鲁七版规则，同文件夹内还有规则书和角色卡，都给我去玩！！！7.21留：翻译群内有最新版角色卡，更加契合七版规则，找不到群也可以来找我要（？7.26留：加了个六版制卡7.27留：加了能抽取恐惧的指令，请使用.喵查看
+// @license      MIT
+// @timestamp    2024-7-27
+// @homepageURL  https://github.com/bigmiin/bird.git
+// @updateUrl
+// ==/UserScript==
+
+//模版卡喵
+const miao={
+    "name":"喵苏鲁",
+    "fullname":"喵苏鲁角色卡制作",
+    "authors":["西瓜咕噜"],
+    "version":"1.0.2",
+    "updatedTime":"20240727",
+    "templateVer":"1.0",
+    //名片
+    "nameTemplate":{
+        "miao":{
+            "template":"{$t玩家_RAW} HP{HP} DEX{敏捷} 移动速度{移动速度}",
+            "helpText": "自动设置喵苏鲁名片"
+        }
+    },
+    "attrConfig":{
+        //stshow置顶内容
+        "top":['力量','体质','体型','智力','敏捷','教育','外貌','意志','幸运','HP','感知','MP','知识','移动力'],
+        "sortBy":"name",
+        "ignores":["力气","耐力","灵巧","魅力"],
+        //上面这行没什么用但没影响别管了
+        "showAs":{
+        },
+        "setter":null,
+    },
+
+    "setConfig":{
+        "diceSides": 100,
+        "enableTip": "已切换至100面骰，开启喵苏鲁规则扩展",
+        "keys": ["miao"],
+        "relatedExt": ["喵苏鲁","coc7"],
+    },
+//这里是规则书上给的技能，写到这，才发现，非默认技能就与人类相同哈哈……好尴尬
+    "defaults":{
+        "攀爬":50,"克苏鲁神话知识":0,"幻梦境知识":10,"做梦":25,"地位":1,
+        "啃咬":25,"撕裂":25,"搔挠":25,"擒抱":25,"致命猫袭":50,
+        "哈气":50,"洞察":1,"跳跃":50,"聆听":40,"导航":25,
+        "神秘学":5,"嗅闻":50,"危险察觉":10,"睡觉":50,"侦查":25,
+        "潜行":50,"街头知识":1,"游泳":10,"追踪":20,"舔舔":50,
+        "嚎叫":50,"催眠":20,"投掷":20
+    },
+
+    "defaultsComputed":{
+        "感知":"意志",
+        "知识":"教育",
+        "卖萌":"外貌/2",
+        "闪避":"敏捷/2",
+        "不定时":"感知/5",
+        "人类语言":"智力/2",
+        "人类知识":"教育/5",
+        "自然知识":"教育/2",
+        "DB":"(力量+体型)<64?-2,(力量+体型)<84?-1,(力量+体型)<124?0,(力量+体型)<164?1D4,(力量+体型)<204?1D6,(力量+体型)<=284?2D6,(力量+体型)<364?3D6,(力量+体型)<444?4d6,(力量+体型)<524?5d6",
+        "BLD":"(力量+体型)<64?-2,(力量+体型)<84?-1,(力量+体型)<124?0,(力量+体型)<164?1,(力量+体型)<204?2,(力量+体型)<=284?3,(力量+体型)<364?4,(力量+体型)<444?5,(力量+体型)<524?6"
+    },
+    //这里是转换还是我也不知道怎么叫，哦等等同义词
+    "alias":{
+        "力量":["str","STR"],"体质":["con","CON","體質"],"体型":["SIZ","SIZ","體型"],
+        "智力":["INT","INT"],"敏捷":["DEX","dex"],"教育":["教養","教养"],
+        "外貌":["APP","APP"],"意志":["pow","POW"],"教育":["教养","EDU","edu"],
+        "灵感":["靈感"],"幸运":["LUC","luc","幸運"],"移动力":["移動速度","移动速度","MOV","mov","移动"],
+        "HP":["生命","生命力","hp"],"感知":["SEN","sen"],"知识":["KNOW","know","知識"],"不定时":["不定时值"],
+        "灵感":["idea","IDEA"],"DB":["db","伤害加成"],"BLD":["bld","体格"],"MP":["mp","魔力","魔力值"],
+        "克苏鲁神话知识":["克蘇魯神話知識","克话","克苏鲁神话"],"卖萌":["裝可愛","装可爱"],"闪避":["迴避","回避"],
+        "幻梦境知识":["夢知識","梦知识"],"做梦":["做夢"],"地位":["信誉","信用"],"哈气":["恐嚇","恐吓"],
+        "人类语言":["人類語","人类语"],"人类知识":["人類學","人类学"],"催眠":["催眠術","催眠术"],
+        "跳跃":["跳躍"],"聆听":["聆聽"],"导航":["導航"],"自然知识":["自然界知識","自然界知识"],
+        "嗅闻":["嗅覺","嗅觉"],"危险察觉":["察覺危險","察觉危险"],"潜行":["潛行"],
+        "侦查":["偵查"],"街头知识":["裏社會","里世界"],"投掷":["投擲"],"追踪":["跟蹤","跟踪"]
+
+    },
+//这是一个总结
+    "textMap": {
+        "trpg-test": {
+            "设置测试_成功": [
+                ["设置完成", 1]
+            ]
+        }
+    },
+    "textMapHelpInfo": null
+}
+
+try {
+    seal.gameSystem.newTemplate(JSON.stringify(miao))
+} catch (e) {
+    // 如果扩展已存在，或加载失败，那么会走到这里
+    console.log(e)
+}
+
+if (!seal.ext.find('喵苏鲁模版卡')) {
+    // 创建一个插件
+    const ext = seal.ext.new('喵苏鲁模版卡', '西瓜咕噜', '1.0.0');
+
+    const cmdmiao = seal.ext.newCmdItemInfo();
+    cmdmiao.name = '喵';
+    cmdmiao.solve = (ctx, msg, cmdArgs) => {
+    let val = cmdArgs.getArgN(1)
+        switch (val) {
+            default: {
+                help = '喵苏鲁TRPG相应指令\n使用.set miao切换角色卡模版\n使用.sn miao做成喵苏鲁名片\n使用.coc6喵<数量>作成喵苏鲁六版规则角色\n使用.coc喵<数量>作成喵苏鲁七版规则角色\n使用.fs抽取一次性损失了超过5点的SEN时的野性行为\n使用.fl抽取短时间内损失了超过SEN值总额20%的SEN值时的野性行为'
+                seal.replyToSender(ctx, msg, help) 
+            }
+        }
+        return seal.ext.newCmdExecuteResult(true);
+    }
+
+    const cmdcat = seal.ext.newCmdItemInfo();
+    cmdcat.name = 'coc喵';
+    cmdcat.solve = (ctx, msg, cmdArgs) => {
+        let val = cmdArgs.getArgN(1)||1
+        switch (val) {
+            default: {
+                let times = parseInt(val)
+                let result = seal.format(ctx,"{$t玩家_RAW}的喵苏鲁作成(7版):\n")
+                let split = seal.formatTmpl(ctx, "COC:制卡_分隔符")
+                if (!parseInt(val) || parseInt(val) == 0) {
+                    const ret = seal.ext.newCmdExecuteResult(true);
+                    ret.showHelp = true;
+                    return ret;
+                }
+                if (times >= 10) {
+                    result += "制卡次数过多，请输入不大于10的数字"
+                    seal.replyToSender(ctx, msg, result)
+                    return seal.ext.newCmdExecuteResult(true);
+                }
+                for (let i = 0; i < times; i++) {
+                    let ret = seal.format(ctx,
+                        "力量:{$t力量=1d3*5} 体质:{$t体质=2d6*5} 体型:{$t体型=5}\n" +
+                        "智力:{$t智力=(2d6+6)*5} 敏捷:{$t敏捷=(2d6+14)*5} 教育:{$t教育=(3d6+3)*5}\n" +
+                        "外貌:{$t外貌=3d6*5} 意志:{$t意志=(2d6+6)*5} 幸运:{$t幸运=3d6*5}\n"+
+                        "移动速度:{$t移动速度=12} HP:{$t生命=($t体质+$t体型)/5} [{$t总和=$t力量+$t体质+$t体型+$t智力+$t敏捷+$t教育+$t外貌+$t意志}/{$t总和+$t幸运}]\n"
+                        )
+                    result = result + ret + split
+                    another = "本插件对应七版规则，建议搭配牌堆使用，六版制卡为.coc6喵"
+                }
+
+                seal.vars.strSet(ctx, "$t制卡结果文本", result)
+                seal.replyToSender(ctx, msg, result+another)
+            }
+        }
+        return seal.ext.newCmdExecuteResult(true);
+    }
+    
+    const cmdliu = seal.ext.newCmdItemInfo();
+    cmdliu.name = 'coc6喵';
+    cmdliu.solve = (ctx, msg, cmdArgs) => {
+        let val = cmdArgs.getArgN(1)||1
+        switch (val) {
+            default: {
+                let times = parseInt(val)
+                let result = seal.format(ctx,"{$t玩家_RAW}的喵苏鲁作成(6版):\n")
+                let split = seal.formatTmpl(ctx, "COC:制卡_分隔符")
+                if (!parseInt(val) || parseInt(val) == 0) {
+                    const ret = seal.ext.newCmdExecuteResult(true);
+                    ret.showHelp = true;
+                    return ret;
+                }
+                if (times >= 10) {
+                    result += "制卡次数过多，请输入不大于10的数字"
+                    seal.replyToSender(ctx, msg, result)
+                    return seal.ext.newCmdExecuteResult(true);
+                }
+                for (let i = 0; i < times; i++) {
+                    let ret = seal.format(ctx,
+                        "力量:{$t力量=1d3} 体质:{$t体质=2d6} 体型:{$t体型=5}\n" +
+                        "智力:{$t智力=(2d6+6)} 敏捷:{$t敏捷=(2d6+14)} 教育:{$t教育=(3d6+3)}\n" +
+                        "外貌:{$t外貌=3d6} 意志:{$t意志=(2d6+6)} 幸运:{$t幸运=3d6}\n"+
+                        "移动速度:{$t移动速度=12} HP:{$t生命=($t体质+$t体型)/5} [{$t总和=$t力量+$t体质+$t体型+$t智力+$t敏捷+$t教育+$t外貌+$t意志}/{$t总和+$t幸运}]\n"
+                        )
+                    result = result + ret + split
+                    another = "本插件对应七版规则，建议搭配牌堆使用，七版制卡为.coc喵"
+                }
+
+                seal.vars.strSet(ctx, "$t制卡结果文本", result)
+                seal.replyToSender(ctx, msg, result+another)
+            }
+        }
+        return seal.ext.newCmdExecuteResult(true);
+    }
+
+
+    const cmdduan = seal.ext.newCmdItemInfo();
+    cmdduan.name = 'fs';
+    cmdduan.solve=(ctx,msg,cmdArgs)=>{
+        let name=seal.format(ctx,"{$t玩家}");
+        switch(cmdArgs.getArgN(1)){
+            case"help":{
+                const ret = seal.ext.newCmdExecuteResult(true);
+                ret.showHelp = true;
+                return ret;
+            }
+            default: {
+                var dice = Number(seal.format(ctx, '{1d10}'));
+                //投掷一个10面骰
+                if (dice<=4){
+                    seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} \n飞快逃命——如果可以的话，你会立即从危机中撤退。如果你不能逃跑，你会恐惧僵硬。\n持续时间：直到你到达安全的地方`)
+                            return seal.ext.newCmdExecuteResult(true);}
+                    else if(dice<=6){
+                    seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} \n恐惧僵硬——你把自己缩得尽可能小，或者躲在某个角落以避免引起注意。如果威胁对象注意到你了，你需要重新投掷野性表现。\n持续时间：直到危机遭遇结束`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice<=8){
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} \n温顺服从——你将服从威胁对象想让你做的任何事。如果你幸存下来了，需要重新投掷两次野性表现。\n持续时间：直到危机遭遇结束`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else{
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} \n战至终章——你维持着防御姿态，除非先受到攻击，否则不会移动。如果你被迫战斗，战斗结束后，重新投掷野性表现。\n持续时间：直到敌人被打败`)
+                        return seal.ext.newCmdExecuteResult(true)
+                    }
+                }
+            }
+        };
+
+
+    const cmdchang = seal.ext.newCmdItemInfo();
+    cmdchang.name = 'fl';
+    cmdchang.solve=(ctx,msg,cmdArgs)=>{
+        let name=seal.format(ctx,"{$t玩家}");
+        switch(cmdArgs.getArgN(1)){
+            case"help":{
+                const ret = seal.ext.newCmdExecuteResult(true);
+                ret.showHelp = true;
+                return ret;
+            }
+
+            default:{
+                var dice = Number(seal.format(ctx, '{1d10}'));
+                //投掷一个10面骰
+                if (dice==10){
+                    seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 吸/咀嚼/进食障碍`)
+                            return seal.ext.newCmdExecuteResult(true);}
+                    else if(dice==9){
+                    seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 烦躁不安、失眠`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==8){
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 食欲不振`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==7){
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 攻击人类和其他动物`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==6){
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 躲避人类和其他动物`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==5){
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 抑郁症`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==4){
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 自残或自食同类`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==3){
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 过度梳理毛发或吐毛球`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==2){
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 过度的领土行为，例如到处喷尿`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else{
+                        seal.replyToSender(ctx,msg,`${name}掷出的野性行为：\n1D10=${dice} 纸盒病——沉迷于钻进小盒中`)
+                        return seal.ext.newCmdExecuteResult(true)
+                    }
+                }
+            }
+        };
+
+
+
+
+    ext.cmdMap['coc喵'] = cmdcat;
+    ext.cmdMap['coc6喵'] = cmdliu;
+    ext.cmdMap['喵'] = cmdmiao;
+    ext.cmdMap['miao'] = cmdmiao;
+    ext.cmdMap['fs'] = cmdduan;
+    ext.cmdMap['fl'] = cmdchang;
+    seal.ext.register(ext);
+}
