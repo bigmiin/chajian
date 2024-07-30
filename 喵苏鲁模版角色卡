@@ -210,7 +210,7 @@ if (!seal.ext.find('喵苏鲁模版卡')) {
     let val = cmdArgs.getArgN(1)
         switch (val) {
             default: {
-                help = '喵苏鲁TRPG相应指令\n使用.set miao切换角色卡模版\n使用.sn miao做成喵苏鲁名片\n使用.coc6喵<数量>作成喵苏鲁六版规则角色\n使用.coc喵<数量>作成喵苏鲁七版规则角色\n使用.fs 抽取一次性损失了超过5点的SEN时的野性行为\n使用.fl 抽取短时间内损失了超过SEN值总额20%的SEN值时的野性行为\n.rma <属性> (数值) //房规1-5,96-100为大失败的检定指令\n.rma <属性> (数值) @//进行代骰鉴定'
+                help = '喵苏鲁TRPG相应指令\n使用.set miao切换角色卡模版\n使用.sn miao做成喵苏鲁名片\n使用.coc6喵<数量>作成喵苏鲁六版规则角色\n使用.coc喵<数量>作成喵苏鲁七版规则角色\n使用.fs 抽取一次性损失了超过5点的SEN时的野性行为\n使用.fl 抽取短时间内损失了超过SEN值总额20%的SEN值时的野性行为\n.rma <属性> (数值) //房规1-5,96-100为大失败的检定指令\n.rma <属性> (数值) @//进行代骰检定'
                 seal.replyToSender(ctx, msg, help) 
             }
         }
