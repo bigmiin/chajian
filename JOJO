@@ -102,6 +102,90 @@ if (!seal.ext.find('jojoTRPG')) {
         return seal.ext.newCmdExecuteResult(true);
     }
 
+//以下为规则书对应的判定，1-5大成功，95-100大失败
+    function makecheck(ctx,value,dic) {
+        let check=value;
+        //checkit
+        let dice=dic;
+        let text0=`${dice}/${seal.format(ctx,`${value}`)}`;
+        let text='';
+        if (check<=94){
+            if (dice<=5){
+                text=seal.formatTmpl(ctx,'COC:判定_大成功');
+            }
+            else if (dice<=(check/4)){
+                text=seal.formatTmpl(ctx,'COC:判定_成功_极难');
+            }
+            else if (dice<=(check/2)){
+                text=seal.formatTmpl(ctx,'COC:判定_成功_困难');
+            }
+            else if (dice<=check){
+                text=seal.formatTmpl(ctx,'COC:判定_成功_普通');
+            }
+            else if (dice>=95){
+                text=seal.formatTmpl(ctx,'COC:判定_大失败');
+            }
+            else{
+                text=seal.formatTmpl(ctx,'COC:判定_失败');
+            }
+            }
+            else if (check<=100){
+                if (dice<=5){
+                    text=seal.formatTmpl(ctx,'COC:判定_大成功');
+                }
+                else if (dice<=(check/4)){
+                    text=seal.formatTmpl(ctx,'COC:判定_成功_极难');
+                }
+                else if (dice<=(check/2)){
+                    text=seal.formatTmpl(ctx,'COC:判定_成功_困难');
+                }
+                else if (dice<=check){
+                    text=seal.formatTmpl(ctx,'COC:判定_成功_普通');
+                }
+                else{
+                    text=seal.formatTmpl(ctx,'COC:判定_大失败');
+                }
+            }
+            text0+=' '+text;
+    return text0;  
+}
+
+    const cmdguize = newCmdItemInfo();
+    cmdguize.name = 'rjo';
+    cmdguize.allowDelegate = true;
+    cmdguize.solve=(ctx,msg,cmdArgs)=>{
+        //获取代骰数据
+    let mctx=seal.getCtxProxyFirst(ctx,cmdArgs);
+    let val = cmdArgs.getArgN(1);
+    switch (val) {
+        case '':
+        case 'help': {
+            const ret = seal.ext.newCmdExecuteResult(true);
+            ret.showHelp = true;
+            return ret;
+        }
+        default: {
+            //计算判定用的值
+            let check=0;
+            if (!parseInt(val)){
+                if (parseInt(cmdArgs.getArgN(2))){
+                    check=parseInt(cmdArgs.getArgN(2))
+                }
+                else{check=seal.format(mctx,`{${val}}`)}
+            }
+            else{
+                check=parseInt(val);
+            };
+            //用函数进行判定
+            let print=makecheck(mctx,check,seal.format(ctx,`{1d100}`));
+            seal.replyToSender(mctx, msg, `${seal.format(mctx,'{$t玩家}进行检定：')}：${print}`);
+            return seal.ext.newCmdExecuteResult(true);
+            
+        }
+    }
+};
+
     //注册命令
     ext.cmdMap['jo'] = cmdzhika;
+    ext.cmdMap['rjo'] = cmdguize;
 }
