@@ -102,7 +102,7 @@ const cmdcy = seal.ext.newCmdItemInfo();
     let val = cmdArgs.getArgN(1)
         switch (val) {
             default: {
-                help = '餐云卧石扩相应指令\n.set cywa \\切换角色卡模版\n.sn cyws \\作成cyws群名片\n.个人特点 \\抽取修仙者个人特点\n.额外经历 \\抽取修仙者额外经历'
+                help = '餐云卧石扩相应指令\n.set cywa \\\切换角色卡模版\n.sn cyws \\\作成cyws群名片\n.个人特点 \\\抽取修仙者个人特点\n.额外经历 \\\抽取修仙者额外经历'
                 seal.replyToSender(ctx, msg, help) 
             }
         }
