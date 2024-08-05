@@ -2,10 +2,11 @@
 // @name         餐云卧石角色卡
 // @author       西瓜咕噜
 // @version      1.0.0
-// @description  如题，有错联系2068281904，只有卡模版，检定用coc7（主要是观察了一番coc房规就能满足检定
+// @description  如题，有错联系2068281904，只有卡模版，检定用coc7（主要是观察了一番coc房规就能满足检定 8.5留：更新了三个指令，使用.cyws查询
 // @license      MIT
 // @timestamp    2024-4-24
 // @homepageURL  https://github.com/bigmiin/bird.git
+// @updateUrl    https://raw.githubusercontent.com/bigmiin/chajian/main/%E9%A4%90%E4%BA%91%E5%8D%A7%E7%9F%B3
 // ==/UserScript==
 
 //以下为设置规则，大概就是这个插件的全部内容了
@@ -89,10 +90,173 @@ try {
     console.log(e)
 }
 
-
-
 if (!seal.ext.find('餐云卧石默认卡')) {
     // 创建一个插件
     const ext = seal.ext.new('餐云卧石默认卡', '西瓜咕噜', '1.0.0');
     seal.ext.register(ext);
 }
+
+const cmdcy = seal.ext.newCmdItemInfo();
+    cmdcy.name = 'cyws';
+    cmdcy.solve = (ctx, msg, cmdArgs) => {
+    let val = cmdArgs.getArgN(1)
+        switch (val) {
+            default: {
+                help = '餐云卧石扩相应指令\n.set cywa \\切换角色卡模版\n.sn cyws \\作成cyws群名片\n.个人特点 \\抽取修仙者个人特点\n.额外经历 \\抽取修仙者额外经历'
+                seal.replyToSender(ctx, msg, help) 
+            }
+        }
+        return seal.ext.newCmdExecuteResult(true);
+    }
+
+const cmdtedian = seal.ext.newCmdItemInfo();
+    cmdtedian.name = '个人特点';
+    cmdtedian.solve=(ctx,msg,cmdArgs)=>{
+        let name=seal.format(ctx,"{$t玩家}");
+        switch(cmdArgs.getArgN(1)){
+            case"help":{
+                const ret = seal.ext.newCmdExecuteResult(true);
+                ret.showHelp = true;
+                return ret;
+            }
+
+            default:{
+                var dice = Number(seal.format(ctx, '{1d8}'));
+                //投掷一个8面骰
+                if (dice==8){
+                    seal.replyToSender(ctx,msg,`${name}掷出的修仙者个人特点：\n1D8=${dice} \n特质：章台客\n描述：修仙者风流倜傥，天性潇洒。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==7){
+                        seal.replyToSender(ctx,msg,`${name}掷出的修仙者个人特点：\n1D8=${dice} \n特质：任平生\n描述：修仙者修仙的最终目的是逍遥天地之间。`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==6){
+                        seal.replyToSender(ctx,msg,`${name}掷出的修仙者个人特点：\n1D8=${dice} \n特质：七杀\n描述：修仙者杀气大，戾气重。`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==5){
+                        seal.replyToSender(ctx,msg,`${name}掷出的修仙者个人特点：\n1D8=${dice} \n特质：醉中仙\n描述：修仙者酒量不好或喜欢美酒。`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==4){
+                        seal.replyToSender(ctx,msg,`${name}掷出的修仙者个人特点：\n1D8=${dice} \n特质：露饮\n描述：修仙者在修行这件事上非常刻苦。`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==3){
+                        seal.replyToSender(ctx,msg,`${name}掷出的修仙者个人特点：\n1D8=${dice} \n特质：烟霞志\n描述：修仙者不喜吵闹，喜欢独自居住。`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else if (dice==2){
+                        seal.replyToSender(ctx,msg,`${name}掷出的修仙者个人特点：\n1D8=${dice} \n特质：稚子\n描述：修仙者不通事故，容易闹出常识性的笑话。`)
+                        return seal.ext.newCmdExecuteResult(true);
+                    }
+                    else{
+                        seal.replyToSender(ctx,msg,`${name}掷出的修仙者个人特点：\n1D8=${dice} \n特质：一往而深\n描述：修仙者容易陷入情劫之中。`)
+                        return seal.ext.newCmdExecuteResult(true)
+                    }
+                }
+            }
+        };
+
+        const cmdjingli = seal.ext.newCmdItemInfo();
+        cmdjingli.name = '额外经历';
+        cmdjingli.solve=(ctx,msg,cmdArgs)=>{
+            let name=seal.format(ctx,"{$t玩家}");
+            switch(cmdArgs.getArgN(1)){
+                case"help":{
+                    const ret = seal.ext.newCmdExecuteResult(true);
+                    ret.showHelp = true;
+                    return ret;
+                }
+    
+                default:{
+                    var dice = Number(seal.format(ctx, '{1d20}'));
+                    //投掷一个10面骰
+                    if (dice==20){
+                        seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：逃跑\n描述：修仙者曾经试图逃离某个地方。`)
+                                return seal.ext.newCmdExecuteResult(true);}
+                        else if(dice==19){
+                        seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：话本子\n描述：修仙者曾经看过一些奇怪的话本子。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==18){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：遍寻忘川\n描述：修仙者曾经经历过刻骨铭心、忘不了的事情。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==17){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：惨痛记忆\n描述：修仙者的同门在自己眼前死去。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==16){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：见证神话\n描述：修仙者曾经见过龙、凤这类神兽。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==15){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：大脑空空\n描述：修仙者有一次出门打架没带武器。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==14){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：被骗了\n描述：修仙者曾经被奸商或骗子哄骗过。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==13){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：遭遇扒手\n描述：修仙者在一次出门时被偷走了钱袋。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==12){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：好学生\n描述：修仙者因为修炼勤快被表扬了。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==11){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：灵气爆炸\n描述：修仙者在修炼时出了差错引起爆炸事件。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==10){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：可遇不可求\n描述：修仙者偶然获得了一本功法秘籍（玄阶法术+1）。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if(dice==9){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：招财进宝\n描述：修仙者曾经有一段时间发财运。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==8){
+                                seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：肚子撑\n描述：修仙者辟谷太久，再次尝到鲜香之后吃撑了。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==7){
+                                seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：走错房间\n描述：修仙者晚上睡觉时走错了地方。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==6){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：被骂了\n描述：修仙者因为某件事被长辈责骂。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==5){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：不如不见\n描述：修仙者曾经和别人恩断义绝。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==4){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：人生错觉\n描述：修仙者曾经误以为某某暗恋自己。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==3){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：走错路\n描述：修仙者在参加某个大会的时候走反方向了。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else if (dice==2){
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：误会\n描述：修仙者被人误会有什么怪癖。`)
+                            return seal.ext.newCmdExecuteResult(true);
+                        }
+                        else{
+                            seal.replyToSender(ctx,msg,`${name}掷出的修仙者额外经历：\n1D20=${dice} \n特质：霉运连连\n描述：修仙者曾经有一段时间连连倒霉。`)
+                            return seal.ext.newCmdExecuteResult(true)
+                        }
+                    }
+                }
+            };
+
+
+ext.cmdMap['个人特点'] = cmdtedian;
+ext.cmdMap['额外经历'] = cmdjingli;
+ext.cmdMap['cyws'] = cmdcy;
