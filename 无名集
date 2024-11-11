@@ -117,6 +117,7 @@ if (!seal.ext.find('无名集模版角色卡')) {
 
     const cmdxiuxiansuiji = seal.ext.newCmdItemInfo();
     cmdxiuxiansuiji.name = 'wmj';
+    cmdxiuxiansuiji.help = '.wmj<数量> //作成无名集修仙者属性\n固定分配，或许以后会更新预设模式';
     cmdxiuxiansuiji.solve = (ctx, msg, cmdArgs) => {
         let val = cmdArgs.getArgN(1)||1
         switch (val) {
